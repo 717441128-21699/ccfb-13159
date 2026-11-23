@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>变电站红外/可见光融合巡检工具</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header>
+  <h1>变电站立式巡检 · 红外/可见光配准融合</h1>
+  <div id="globalStatus">就绪</div>
+</header>
+<main>
+  <!-- 左栏:批次 -->
+  <aside id="leftPanel">
+    <section class="panel">
+      <h2>样例数据</h2>
+      <div class="row">
+        <button id="btnGenAll">生成全部样例</button>
+      </div>
+      <div id="sampleButtons" class="sampleBtns"></div>
+    </section>
+    <section class="panel">
+      <h2>批次导入</h2>
+      <input type="file" id="fileInput" multiple accept="image/*">
+      <div class="row">
+        <label>温标下限 <input type="number" id="impTMin" value="10" step="1"></label>
+        <label>温标上限 <input type="number" id="impTMax" value="90" step="1"></label>
+      </div>
+      <p class="hint">文件名含 ir/红外/thermal 的识别为红外图,含 vis/可见光/rgb 的识别为可见光图,其余按排序两两配对。导入灰度红外图按温标线性还原温度。</p>
+    </section>
+    <section class="panel grow">
+      <h2>图片对清单 <button id="btnProcessAll" class="small">处理全部</button></h2>
+      <ul id="pairList"></ul>
+    </section>
+  </aside>
+
+  <!-- 中栏:图像 -->
+  <section id="centerPanel">
+    <div id="viewTabs">
+      <button data-view="0" class="active">融合</button>
+      <button data-view="1">可见光</button>
+      <button data-view="2">红外伪彩</button>
+      <button data-view="3">边缘配准</button>
+    </div>
+    <div id="canvasWrap">
+      <canvas id="glCanvas" width="800" height="600"></canvas>
+      <canvas id="overlayCanvas" width="800" height="600"></canvas>
+      <div id="readout" hidden></div>
+    </div>
+    <div id="metricsBar">
+      <span id="mTime">耗时 —</span>
+      <span id="mDetail">细节保持 —</span>
+      <span id="mBg">背景对比度 —</span>
+      <span id="mScore">配准得分 —</span>
+    </div>
+  </section>
+
+  <!-- 右栏:控制 -->
+  <aside id="rightPanel">
+    <section class="panel">
+      <h2>配准调整</h2>
+      <div class="row"><button id="btnAutoReg">自动配准</button><button id="btnResetReg" class="small">重置</button></div>
+      <label>平移 X <input type="range" id="rgDx" min="-40" max="40" step="0.5" value="0"><span id="rgDxV"></span></label>
+      <label>平移 Y <input type="range" id="rgDy" min="-40" max="40" step="0.5" value="0"><span id="rgDyV"></span></label>
+      <label>缩放 <input type="range" id="rgScale" min="0.75" max="1.2" step="0.005" value="0.92"><span id="rgScaleV"></span></label>
+      <label>旋转° <input type="range" id="rgRot" min="-4" max="4" step="0.05" value="0"><span id="rgRotV"></span></label>
+      <label>畸变 k1 <input type="range" id="rgK1" min="-0.3" max="0.3" step="0.005" value="0.12"><span id="rgK1V"></span></label>
+      <label>视差场强度 <input type="range" id="rgField" min="0" max="1.5" step="0.05" value="1"><span id="rgFieldV"></span></label>
+      <label class="chk"><input type="checkbox" id="chkField"> 显示视差场</label>
+      <label class="chk"><input type="checkbox" id="chkDevices" checked> 显示设备框</label>
+    </section>
+    <section class="panel">
+      <h2>融合显示</h2>
+      <label>调色板
+        <select id="selPalette">
+          <option value="iron">铁红</option>
+          <option value="jet">彩虹</option>
+          <option value="gray">灰度</option>
+        </select>
+      </label>
+      <label>显色起点 °C <input type="range" id="rgT0" min="0" max="120" step="1" value="35"><span id="rgT0V"></span></label>
+      <label>显色终点 °C <input type="range" id="rgT1" min="0" max="150" step="1" value="75"><span id="rgT1V"></span></label>
+      <label>叠加强度 <input type="range" id="rgAlpha" min="0.2" max="1" step="0.05" value="0.85"><span id="rgAlphaV"></span></label>
+    </section>
+    <section class="panel grow">
+      <h2>发热点清单</h2>
+      <table id="hotTable">
+        <thead><tr><th>#</th><th>设备/部位</th><th>最高温</th><th>温升</th><th>等级</th></tr></thead>
+        <tbody></tbody>
+      </table>
+      <p class="hint">点击融合图任意位置读取该点原始温度;点击清单行定位发热点。</p>
+    </section>
+  </aside>
+</main>
+<script type="module" src="dist/main.js"></script>
+</body>
+</html>

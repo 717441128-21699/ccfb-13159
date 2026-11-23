@@ -1,0 +1,11 @@
+{
+  "name": "substation-ir-vis-fusion",
+  "version": "1.0.0",
+  "private": true,
+  "description": "变电站红外/可见光配准融合巡检工具(WebGL2 + TypeScript)",
+  "scripts": {
+    "build": "tsc",
+    "start": "node server.mjs",
+    "test:e2e": "node e2e/test.mjs"
+  }
+}
